@@ -1,9 +1,8 @@
 package tdt4145;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.stream.Stream;
-import java.sql.*;
 
 public class Meny {
 	static ResultSet result;
@@ -36,12 +35,12 @@ public class Meny {
 				query = "INSERT INTO apparat values(\""+navn+"\",\""+beskrivelse+"\")";
 				Driver.Write(query);
 				
-			}else if(svar == 2){
-				System.out.println("Med eller uten apparat?");
+			}else if(svar == 2){ //Usikker
+				System.out.println("Navn *enter* Med eller uten apparat?");
+				String navn =scanner.nextLine();
 				String medUten = scanner.nextLine();
 				if(medUten=="med") {
 					System.out.println("Navn på øvelse *enter*, og (apparat komma kilo komma sett) adskilt av *enter*");
-					String navn =scanner.nextLine();
 					while(scanner.hasNextLine()) {
 						String[] input = scanner.nextLine().split(",");
 						query = "insert into øvelsemedapparat \""+ navn+"\",\""+input[0]+"\","+Integer.parseInt(input[1])+","+Integer.parseInt(input[2]);
@@ -50,12 +49,9 @@ public class Meny {
 				
 				}
 				else if(medUten=="uten") {
-					
+					query = "INSERT INTO øvelse values(\""+navn+"\")";
 				}
-				//System.out.println("Hva er øvelsens navn?");
-				//String navn = scanner.nextLine();
-				//query = "INSERT INTO Øvelse values(\""+navn+"\")";
-				//Driver.Write(query);
+				Driver.Write(query);
 				
 			}else if(svar == 3) {
 				System.out.println("dato(ÅÅÅÅMMDD), tidspunkt(tt:mm:ss), varighet(tt:mm:ss), personligForm, prestasjon, notat?");
@@ -87,7 +83,7 @@ public class Meny {
 				result = Driver.Read(query);
 				Driver.PrintSet(result);
 				
-			}else if(svar == 6) {
+			}else if(svar == 6) { //Usikker
 				ArrayList<String> øvelseliste = new ArrayList<>();
 				System.out.println("Hvilken muskelgruppe?");
 				String muskelgruppeNavn = scanner.nextLine();
@@ -95,14 +91,16 @@ public class Meny {
 				while(true) {
 					System.out.println("Skriv inn ønsket øvelse fra listen, \"quit\" for å hoppe ut av loop");
 					String nyØvelse = scanner.nextLine();
-					if (nyØvelse != "quit") {
-						øvelseliste.add(nyØvelse);
-					}
-					else {
+					if (nyØvelse == "quit") {
 						break;
 					}
+					else {
+						øvelseliste.add(nyØvelse);
+					}
 				}
-				
+				for (String string : øvelseliste) {
+					query = "insert into \""+muskelgruppeNavn+"\" values(";
+				}
 			}
 			else if(svar == 7) {
 				
