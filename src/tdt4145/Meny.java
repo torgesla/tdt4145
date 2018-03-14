@@ -44,7 +44,6 @@ public class Meny {
 					while(scanner.hasNextLine()) {
 						String[] input = scanner.nextLine().split(",");
 						query = "insert into øvelsemedapparat \""+ navn+"\",\""+input[0]+"\","+Integer.parseInt(input[1])+","+Integer.parseInt(input[2]);
-						System.out.println(query);
 					}
 				
 				}
@@ -71,13 +70,18 @@ public class Meny {
 				result = Driver.Read("SELECT * FROM treningsøkt ORDER BY dato DESC,tidspunkt DESC LIMIT "+ n+")");
 				Driver.PrintSet(result);
 			}
-			else if(svar == 5) { //funker ikke
+			else if(svar == 5) { //Usikker
+				System.out.println("Start: tt:mm:ss,ÅÅÅÅMMDD *enter*\n"
+						+ "Slutt: tt:mm:ss,ÅÅMMDD");
+				String[] start = scanner.nextLine().split(",");
+				String[] slutt = scanner.nextLine().split(",");
+				
 				query = "SELECT * \n" 
 						+"FROM Øvelse NATURAL JOIN ØvelserForTreningsøkt NATURAL JOIN Treningsøkt \n"
-						+ "where (treningsøkt.dato>=datostart('20131215') \n"
-						+ "and treningsøkt.dato<=datoslutt('20131215') \n"
-						+ "and ((treningsøkt.tidspunkt>=tidstart('07:00:00') \n"
-						+ "and treningsøkt.tidspunkt<=tidslutt('18:00:00')) or (AddTime(treningsøkt.tidspunkt,treningsøkt.varighet)>=tidsstart \n"
+						+ "where (treningsøkt.dato>=datostart(\""+start[1]+"\") \n"
+						+ "and treningsøkt.dato<=datoslutt(\""+slutt[1]+"\") \n"
+						+ "and ((treningsøkt.tidspunkt>=tidstart(\""+start[0]+"\") \n"
+						+ "and treningsøkt.tidspunkt<=tidslutt(\""+slutt[0]+"\")) or (AddTime(treningsøkt.tidspunkt,treningsøkt.varighet)>=tidsstart \n"
 						+ "and AddTime(treningsøkt.tidspunkt,treningsøkt.varighet)<=tidslutt) or (treningsøkt.tidspunkt<=tidsstart \n"
 						+ "and AddTime(treningsøkt.tidspunkt,treningsøkt.varighet)>=tidslutt)));";
 				result = Driver.Read(query);
@@ -102,11 +106,23 @@ public class Meny {
 					query = "insert into \""+muskelgruppeNavn+"\" values(";
 				}
 			}
-			else if(svar == 7) {
-				
+			else if(svar == 7) { //Usikker
+				Driver.PrintTable("øvelsesgruppe");
+				System.out.println("Hvilken gruppe vil du se øvelser fra?");
+				String gruppe = scanner.nextLine();
+				query = "SELECT øvelsesnavn FROM Øvelsesgruppe NATURAL JOIN GruppeForØvelse\n" 
+						+"where GruppeForØvelse.gruppenavn=gruppenavn(\""+gruppe+"\")";
+				result = Driver.Read(query);
+				Driver.PrintSet(result);
 			}
-			else if(svar == 8) {
-				
+			else if(svar == 8) { //Usikker
+				System.out.println("Skriv navn på apparat du vil se øvelser til: ");
+				String apparat = scanner.nextLine();
+				query = "SELECT *\n"
+						+"FROM Øvelse NATURAL JOIN ØvelseMedApparat NATURAL JOIN Apparat"
+						+"where Apparat.navn=navn(\""+apparat+"\")";
+				result = Driver.Read(query);
+				Driver.PrintSet(result);
 			}
 			else if(svar == 9) {
 				System.out.println("Hva vil du printe?");
@@ -114,9 +130,6 @@ public class Meny {
 				Driver.PrintTable(skalPrintes);
 				result = Driver.Read("select * from \""+skalPrintes+"\"");
 				Driver.PrintSet(result);
-			}
-			else if(svar == 10) {
-				
 			}
 			else{
 				System.out.println("Illegal input: try again");
