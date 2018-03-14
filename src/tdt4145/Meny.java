@@ -28,31 +28,36 @@ public class Meny {
 			if(svar == 0) {
 				break;
 				
-			}else if(svar == 1) {
+			}else if(svar == 1) { //Funker
 				System.out.println("Hva er apparatets navn og beskrivelse?");
 				String navn = scanner.nextLine();
 				String beskrivelse = scanner.nextLine();
 				query = "INSERT INTO apparat values(\""+navn+"\",\""+beskrivelse+"\")";
 				Driver.Write(query);
 				
-			}else if(svar == 2){ //Usikker
-				System.out.println("Navn *enter* Med eller uten apparat?");
+			}else if(svar == 2){
+				System.out.println("Navn *enter* med eller uten apparat?");
 				String navn =scanner.nextLine();
+				System.out.println(navn);
 				String medUten = scanner.nextLine();
-				if(medUten=="med") {
-					System.out.println("Navn på øvelse *enter*, og (apparat komma kilo komma sett) adskilt av *enter*");
+				System.out.println(medUten);
+				if(medUten.equals("med")) { //Funker ikke ForeginKey-ERROR
+					System.out.println("(kilo komma sett komma apparatnavn) adskilt av *enter*");
 					while(scanner.hasNextLine()) {
 						String[] input = scanner.nextLine().split(",");
-						query = "insert into øvelsemedapparat \""+ navn+"\",\""+input[0]+"\","+Integer.parseInt(input[1])+","+Integer.parseInt(input[2]);
+						query = "INSERT INTO øvelsemedapparat values( \""+ navn+"\","+Integer.parseInt(input[0])+","+Integer.parseInt(input[1])+",\""+input[2]+"\")";
+						System.out.println(query);
+						Driver.Write(query);
 					}
 				
 				}
-				else if(medUten=="uten") {
+				else if(medUten.equals("uten")) { //Funker
 					query = "INSERT INTO øvelse values(\""+navn+"\")";
+					Driver.Write(query);
 				}
-				Driver.Write(query);
 				
-			}else if(svar == 3) {
+				
+			}else if(svar == 3) { //Funker
 				System.out.println("dato(ÅÅÅÅMMDD), tidspunkt(tt:mm:ss), varighet(tt:mm:ss), personligForm, prestasjon, notat?");
 				String dato = scanner.nextLine();
 				String tidspunkt = scanner.nextLine();
@@ -64,10 +69,11 @@ public class Meny {
 						+ " values (\""+dato+"\",\""+tidspunkt+"\",\""+varighet+"\","+form+","+prestasjon+",\""+notat+"\")";	
 				Driver.Write(query); 
 				
-			}else if(svar == 4) { //Funker ikke
+			}else if(svar == 4) { //Funker
 				System.out.println("skriv inn en n");
 				int n = Integer.parseInt(scanner.nextLine());
-				result = Driver.Read("SELECT * FROM treningsøkt ORDER BY dato DESC,tidspunkt DESC LIMIT "+ n+")");
+				query = "SELECT * FROM treningsøkt ORDER BY dato DESC,tidspunkt DESC LIMIT "+ n;
+				result = Driver.Read(query);
 				Driver.PrintSet(result);
 			}
 			else if(svar == 5) { //Usikker
@@ -83,11 +89,12 @@ public class Meny {
 						+ "and ((treningsøkt.tidspunkt>=tidstart(\""+start[0]+"\") \n"
 						+ "and treningsøkt.tidspunkt<=tidslutt(\""+slutt[0]+"\")) or (AddTime(treningsøkt.tidspunkt,treningsøkt.varighet)>=tidsstart \n"
 						+ "and AddTime(treningsøkt.tidspunkt,treningsøkt.varighet)<=tidslutt) or (treningsøkt.tidspunkt<=tidsstart \n"
-						+ "and AddTime(treningsøkt.tidspunkt,treningsøkt.varighet)>=tidslutt)));";
+						+ "and AddTime(treningsøkt.tidspunkt,treningsøkt.varighet)>=tidslutt)))";
+				System.out.println(query);
 				result = Driver.Read(query);
 				Driver.PrintSet(result);
 				
-			}else if(svar == 6) { //Usikker
+			}else if(svar == 6) { //Funker ikke ForeignKEY-ERROR
 				ArrayList<String> øvelseliste = new ArrayList<>();
 				System.out.println("Hvilken muskelgruppe?");
 				String muskelgruppeNavn = scanner.nextLine();
@@ -95,18 +102,19 @@ public class Meny {
 				while(true) {
 					System.out.println("Skriv inn ønsket øvelse fra listen, \"quit\" for å hoppe ut av loop");
 					String nyØvelse = scanner.nextLine();
-					if (nyØvelse == "quit") {
+					if (nyØvelse.equals("quit")) {
 						break;
 					}
 					else {
 						øvelseliste.add(nyØvelse);
 					}
 				}
-				for (String string : øvelseliste) {
-					query = "insert into \""+muskelgruppeNavn+"\" values(";
+				for (String øvelse : øvelseliste) {
+					query = "insert into gruppeforøvelse values(\""+øvelse+"\",\""+muskelgruppeNavn+"\")";
+					Driver.Write(query);
 				}
 			}
-			else if(svar == 7) { //Usikker
+			else if(svar == 7) { //Usikker-Sjekke etter at func-6 er på plass
 				Driver.PrintTable("øvelsesgruppe");
 				System.out.println("Hvilken gruppe vil du se øvelser fra?");
 				String gruppe = scanner.nextLine();
@@ -115,16 +123,17 @@ public class Meny {
 				result = Driver.Read(query);
 				Driver.PrintSet(result);
 			}
-			else if(svar == 8) { //Usikker
+			else if(svar == 8) { //Usikker ForeignKey-ERROR
 				System.out.println("Skriv navn på apparat du vil se øvelser til: ");
 				String apparat = scanner.nextLine();
 				query = "SELECT *\n"
 						+"FROM Øvelse NATURAL JOIN ØvelseMedApparat NATURAL JOIN Apparat"
-						+"where Apparat.navn=navn(\""+apparat+"\")";
+						+" where Apparat.navn=navn(\""+apparat+"\")";
+				System.out.println(query);
 				result = Driver.Read(query);
 				Driver.PrintSet(result);
 			}
-			else if(svar == 9) {
+			else if(svar == 9) { //Funker
 				System.out.println("Hva vil du printe?");
 				String skalPrintes = scanner.nextLine();
 				Driver.PrintTable(skalPrintes);

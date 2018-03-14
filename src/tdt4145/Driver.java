@@ -36,8 +36,19 @@ public class Driver {
 			System.out.println(string);
 		}	
 	}
-	public static void PrintSet(ResultSet result) throws SQLException {
+	/*public static void PrintSet(ResultSet result) throws SQLException {
 		String table = result.getMetaData().getTableName(1);
 		PrintTable(table);
+	}*/
+	public static void PrintSet(ResultSet result) throws SQLException {
+		int columnCount = result.getMetaData().getColumnCount();
+		while(result.next()) {
+			String string = "";
+			for (int i = 1; i < columnCount+1; i++) {
+				string+=result.getString(i)+",";
+			}
+			System.out.println(string);
+		}
+		
 	}
 }
