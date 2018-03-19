@@ -36,10 +36,6 @@ public class Driver {
 			System.out.println(string);
 		}	
 	}
-	/*public static void PrintSet(ResultSet result) throws SQLException {
-		String table = result.getMetaData().getTableName(1);
-		PrintTable(table);
-	}*/
 	public static void PrintSet(ResultSet result) throws SQLException {
 		int columnCount = result.getMetaData().getColumnCount();
 		while(result.next()) {
