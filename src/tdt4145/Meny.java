@@ -32,29 +32,27 @@ public class Meny {
 				System.out.println("Hva er apparatets navn *enter* beskrivelse?");
 				String navn = scanner.nextLine();
 				String beskrivelse = scanner.nextLine();
-				query = "INSERT INTO apparat values(\""+navn+"\",\""+beskrivelse+"\")";
+				query = "INSERT INTO apparat values('"+navn+"','"+beskrivelse+"')";
 				Driver.Write(query);
 				
-			}else if(svar == 2){ //Funker, fortsetter ikke i while-loopen, why? 
-				System.out.println("NavnPåØvelse *enter* med eller uten apparat?");
-				String navn =scanner.nextLine();
-				String medUten = scanner.nextLine();
-				query = "insert ignore into øvelse values(\""+navn+"\")";
-				Driver.Write(query);
-				if(medUten.equals("med")) {
+			}else if(svar == 2){ //Funker kanskje
+				System.out.println("Navn på øvelse *enter* med eller uten apparat");
+				String navnPåØvelse = scanner.nextLine();
+				String medUten =scanner.nextLine();
+				if (medUten.equals("med")) {
 					System.out.println("(kilo *komma* sett *komma* apparatnavn) adskilt av *enter*");
-					while(scanner.hasNextLine()) {
-						String[] input = scanner.nextLine().split(",");
-						if (input.equals("quit")) {
-							break;
-						}
-						else {
-						query = "insert ignore into apparat values(\""+input[2]+"\",\" NULL \")";
-						Driver.Write(query);
-						query = "INSERT INTO øvelsemedapparat values( \""+ navn+"\","+Integer.parseInt(input[0])+","+Integer.parseInt(input[1])+",\""+input[2]+"\")";
-						Driver.Write(query);
-						}
-					}
+					String[] input = scanner.nextLine().split(",");
+					query = "insert ignore into apparat values('"+input[2]+"','Null')";
+					System.out.println(query);
+					Driver.Write(query);
+					query = "INSERT INTO øvelsemedapparat values( '"+ navnPåØvelse+"',"+Integer.parseInt(input[0])+","+Integer.parseInt(input[1])+",'"+input[2]+"')";
+					System.out.println(query);
+					Driver.Write(query);
+				} else {
+					System.out.println("Beskrivelse for øvelse uten apparat?");
+					String beskrivelse = scanner.nextLine();
+					query = "insert into øvelseutenapparat values('"+navnPåØvelse+"','"+beskrivelse+"')";
+					Driver.Write(query);
 				}
 				
 			}else if(svar == 3) { //Funker
@@ -82,24 +80,21 @@ public class Meny {
 			}else if(svar == 4) { //Funker
 				System.out.println("skriv inn en n");
 				int n = Integer.parseInt(scanner.nextLine());
-				query = "SELECT * FROM treningsøkt ORDER BY dato DESC,tidspunkt DESC LIMIT "+ n;
+				query = "SELECT * FROM treningsøkt natural ORDER BY dato DESC,tidspunkt DESC LIMIT "+ n;
 				result = Driver.Read(query);
 				Driver.PrintSet(result);
 			}
-			else if(svar == 5) { //Funker ikke
-				System.out.println("Start: tt:mm:ss,ÅÅÅÅMMDD *enter*\n"
-						+ "Slutt: tt:mm:ss,ÅÅMMDD");
-				String[] start = scanner.nextLine().split(",");
-				String[] slutt = scanner.nextLine().split(",");
+			else if(svar == 5) { //Funker
+				System.out.println("Start: ÅÅÅÅMMDD *enter*\n"
+						+ "Slutt: ÅÅMMDD");
+				String start = scanner.nextLine();
+				String slutt = scanner.nextLine();
 				
-				query = "SELECT * \n" 
-						+"FROM Øvelse NATURAL JOIN ØvelserForTreningsøkt NATURAL JOIN Treningsøkt \n"
-						+ "where (treningsøkt.dato>=\""+start[1]+"\" \n"
-						+ "and treningsøkt.dato<=\""+slutt[1]+"\" \n"
-						+ "and treningsøkt.tidspunkt>=\""+start[0]+"\" \n"
-						+ "and treningsøkt.tidspunkt<=\""+slutt[0]+"\" or treningsøkt.tidspunkt,treningsøkt.varighet>=tidsstart \n"
-						+ "and treningsøkt.tidspunkt,treningsøkt.varighet<=tidslutt) or (treningsøkt.tidspunkt<=tidsstart \n"
-						+ "and AddTime(treningsøkt.tidspunkt,treningsøkt.varighet)>=tidslutt)))";
+				query = "select personligform,prestasjon,notat, øvelserfortreningsøkt.navn,kilo,sett from treningsøkt\n"
+						+"natural join øvelserfortreningsøkt \n"
+						+"left join øvelsemedapparat on øvelserfortreningsøkt.navn = øvelsemedapparat.navn"
+						+" where dato between '"+ start+"' and '"+slutt+"';";
+				System.out.println(query);
 				result = Driver.Read(query);
 				Driver.PrintSet(result);
 				
