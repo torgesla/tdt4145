@@ -35,18 +35,18 @@ public class Meny {
 				query = "INSERT INTO apparat values('"+navn+"','"+beskrivelse+"')";
 				Driver.Write(query);
 				
-			}else if(svar == 2){ //Funker kanskje
+			}else if(svar == 2){ //Funker
 				System.out.println("Navn på øvelse *enter* med eller uten apparat");
 				String navnPåØvelse = scanner.nextLine();
+				query = "insert ignore into øvelse values('"+navnPåØvelse+"')";
+				Driver.Write(query);
 				String medUten =scanner.nextLine();
 				if (medUten.equals("med")) {
-					System.out.println("(kilo *komma* sett *komma* apparatnavn) adskilt av *enter*");
+					System.out.println("(kilo *komma* sett *komma* apparatnavn)*enter*");
 					String[] input = scanner.nextLine().split(",");
 					query = "insert ignore into apparat values('"+input[2]+"','Null')";
-					System.out.println(query);
 					Driver.Write(query);
 					query = "INSERT INTO øvelsemedapparat values( '"+ navnPåØvelse+"',"+Integer.parseInt(input[0])+","+Integer.parseInt(input[1])+",'"+input[2]+"')";
-					System.out.println(query);
 					Driver.Write(query);
 				} else {
 					System.out.println("Beskrivelse for øvelse uten apparat?");
